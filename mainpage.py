@@ -3,7 +3,7 @@ from caching import cache
 import requests
 from ast import literal_eval
 from download import download, check_downloaded
-from os import listdir, path, popen
+from os import listdir, path, popen, mkdir
 
 
 WHITE_THEME = ['#E6E0D4', '#f5f5f5', '#EBEBEB']
@@ -48,7 +48,7 @@ class mainStore(QWidget):
 
     def initUI(self):
         # QApplication.processEvents()
-        self.setWindowTitle('Main window')
+        self.setWindowTitle('bShop')
         self.setGeometry(300, 300, 1130, 670)
         self.setMinimumWidth(5 * 140 + 260)
         qt_rectangle = self.frameGeometry()
@@ -467,7 +467,8 @@ class mainStore(QWidget):
         self.AppAboutFrame.hide()
         self.DownloadsFrame.show()
         self.SettingsFrame.hide()
-
+        if not path.exists('downloads'):
+            mkdir('downloads')
         apps = listdir("downloads")
         if apps:
             for i in reversed(range(self.downloadAppsLayout.count())):
@@ -594,6 +595,7 @@ class mainStore(QWidget):
 class LoginWidg(QWidget):
     def __init__(self):
         super().__init__()
+        self.setWindowIcon(QIcon('icons/icon.ico'))
         self.initUI()
 
 
@@ -631,7 +633,7 @@ class LoginWidg(QWidget):
         center_Point = QDesktopWidget().availableGeometry().center()
         qt_rectangle.moveCenter(center_Point)
         self.move(qt_rectangle.topLeft())
-        self.setWindowTitle('test')
+        self.setWindowTitle('Log in -- bShop')
         self.show()
 
     def logUI(self):

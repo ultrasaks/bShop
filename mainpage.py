@@ -8,22 +8,26 @@ from os import listdir, path, popen
 
 WHITE_THEME = ['#E6E0D4', '#f5f5f5', '#EBEBEB']
 DARK_THEME = ['#1E1D1B', '#232629', '#141414']
+settings = {}
+
+
 
 def empty_settings():
-    with open('settings.ini', 'w') as settings_file:
-        settings_file.write('{"dark_theme": False}')
-        settings = {"dark_theme": False}
+    settings["dark_theme"] = False
+    print(settings)
+
 
 
 if not path.exists('settings.ini'):
     empty_settings()
-with open('settings.ini', 'r') as settings_file:
-    try:
-        settings = literal_eval(settings_file.read())
-    except ValueError:
-        empty_settings()
-    except SyntaxError:
-        empty_settings()
+else:
+    with open('settings.ini', 'r') as settings_file:
+        try:
+            settings = literal_eval(settings_file.read())
+        except ValueError:
+            empty_settings()
+        except SyntaxError:
+            empty_settings()
 THEME = WHITE_THEME
 if settings['dark_theme']:
     THEME = DARK_THEME
@@ -81,7 +85,6 @@ class mainStore(QWidget):
         descrLayout = QHBoxLayout()
         self.description = QLabel()
         self.descrScroll.setWidget(self.description)
-        # self.icon = mishSVG()#f'cache/{str(appid)}/icon.svg')
         self.icon = QLabel()
         self.fromL = QLabel(author)
         tags = QHBoxLayout()
@@ -189,6 +192,69 @@ class mainStore(QWidget):
 
         self.MainFrame.setLayout(self.AppsLayout)
 
+        self.SettingsLayout = QVBoxLayout()
+        self.SettingsLayout.setAlignment(Qt.AlignTop)
+        self.SettingsFrame = QFrame()
+        self.SettingsFrame.setStyleSheet('border: 0px;border-radius: 0px;')
+        self.SettingsFrame.setLayout(self.SettingsLayout)
+        self.MainLayout.addWidget(self.SettingsFrame)
+        self.SettingsFrame.hide()
+
+        settingsTitle = QLabel('Settings')
+        settingsTitle.setFont(QFont('Roboto', 15))
+        settingsTitle.setFixedHeight(40)
+
+        themeGroup = QGroupBox()
+        themeGroup.setTitle('theme')
+        themeGroup.setFixedHeight(100)
+        themeLayout = QHBoxLayout()
+        themeGroup.setLayout(themeLayout)
+
+        self.themeCBox = QCheckBox('Dark theme(beta)')
+        if settings['dark_theme']:
+            self.themeCBox.setChecked(True)
+        themeLayout.addWidget(self.themeCBox)
+        themeLayout.addWidget(QLabel(' '))
+
+        accountGroup = QGroupBox()
+        accountGroup.setTitle('account settings')
+        accountLayout = QVBoxLayout()
+        accountGroup.setLayout(accountLayout)
+
+        accountTitle = QLabel('Name:')
+        accountTitle.setFont(QFont('Roboto', 12))
+        accountName = QLabel(settings['login'])
+        accountName.setFont(QFont('Roboto', 10))
+        accountExitBtn = animatedPushButton('Sign out', dark=objTheme)
+        accountExitBtn.clicked.connect(self.logOff)
+
+        accountLayout.addWidget(accountTitle)
+        accountLayout.addWidget(accountName)
+        accountLayout.addSpacing(40)
+        accountLayout.addWidget(accountExitBtn)
+
+        pref = QGroupBox()
+        prefLayout = QVBoxLayout()
+        prefLayout.setContentsMargins(0, 0, 0, 0)
+        pref.setLayout(prefLayout)
+        pref.setStyleSheet('QGroupBox {padding:10px;padding-top: 10px}')
+        savePrefBtn = animatedPushButton('Save changes', dark=objTheme)
+        savePrefBtn.setFixedHeight(20)
+        savePrefBtn.clicked.connect(self.savePreferences)
+        prefWarning = QLabel('*Changes will take effect after restarting the program')
+        prefWarning.setFixedHeight(20)
+        prefLayout.addWidget(savePrefBtn)
+        prefLayout.addWidget(prefWarning)
+
+
+        self.SettingsLayout.addWidget(settingsTitle)
+        self.SettingsLayout.addWidget(themeGroup)
+        self.SettingsLayout.addWidget(accountGroup)
+        self.SettingsLayout.addWidget(pref)
+        self.SettingsLayout.addWidget(QLabel(' '))
+
+        #ToDo: settings
+
         self.homeBtnLayout = QHBoxLayout()
         self.homeBtnLayout.setAlignment(Qt.AlignVCenter)
         self.homeBtnText = QLabel('Home')
@@ -215,7 +281,7 @@ class mainStore(QWidget):
         self.settingsBtnIcon.setFixedSize(25, 25)
         self.settingsBtnLayout.addWidget(self.settingsBtnIcon)
         self.settingsBtnLayout.addWidget(self.settingsBtnText)
-        self.settingsBtn.clicked.connect(self.black_theme)
+        self.settingsBtn.clicked.connect(self.showSettings)
 
         self.libraryBtnLayout = QHBoxLayout()
         self.libraryBtnLayout.setAlignment(Qt.AlignVCenter)
@@ -355,6 +421,7 @@ class mainStore(QWidget):
         self.SearchFrame.hide()
         self.AppAboutFrame.show()
         self.DownloadsFrame.hide()
+        self.SettingsFrame.hide()
         cache().bigIcCache(id)
 
 
@@ -363,11 +430,11 @@ class mainStore(QWidget):
         self.nameL.setText(application_info['name'])
         self.fromL.setText(application_info['author'])
         self.description.setText(application_info['description'])
-        print(application_info['description'].count('\n'))
 
 
 
-        self.description.setFixedHeight((len(application_info['description']) // 100) * 20)
+        # self.description.setFixedHeight((len(application_info['description']) // 100) * 20)
+        self.description.setFixedHeight((application_info['description'].count('\n') * 20)+ 20)
         if self.description.height() == 0:
             self.description.setFixedHeight(20)
 
@@ -377,6 +444,7 @@ class mainStore(QWidget):
         self.SearchFrame.hide()
         self.AppAboutFrame.hide()
         self.DownloadsFrame.hide()
+        self.SettingsFrame.hide()
         # self.resize(curSize)
 
     def showSearch(self):
@@ -384,12 +452,21 @@ class mainStore(QWidget):
         self.SearchFrame.show()
         self.AppAboutFrame.hide()
         self.DownloadsFrame.hide()
+        self.SettingsFrame.hide()
+
+    def showSettings(self):
+        self.MainFrame.hide()
+        self.SearchFrame.hide()
+        self.AppAboutFrame.hide()
+        self.DownloadsFrame.hide()
+        self.SettingsFrame.show()
 
     def showDownloads(self):
         self.MainFrame.hide()
         self.SearchFrame.hide()
         self.AppAboutFrame.hide()
         self.DownloadsFrame.show()
+        self.SettingsFrame.hide()
 
         apps = listdir("downloads")
         if apps:
@@ -498,11 +575,213 @@ class mainStore(QWidget):
     def open_app(self, file):
         popen(f'{path.dirname(path.abspath(__file__))}\downloads\{file}')
 
+    def logOff(self):
+        with open('settings.ini', 'w') as settings_file:
+            settings.pop('login')
+            settings.pop('password')
+            settings_file.write(str(settings))
+        self.close()
+
+    def savePreferences(self):
+        global settings
+        settings['dark_theme'] = self.themeCBox.isChecked()
+        with open('settings.ini', 'w') as settings_file:
+            settings_file.write(str(settings))
+
+
+
+
+class LoginWidg(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+
+    def initUI(self):
+        self.linedits = {}
+
+        self.vertLayout = QVBoxLayout()
+        self.logregwidg = QTabWidget()
+        self.log = QWidget()
+        self.reg = QWidget()
+        self.err = QLabel()
+
+        self.welcomeLbl = QLabel('Welcome')
+        self.welcomeLbl.setAlignment(Qt.AlignHCenter)
+        self.welcomeLbl.setFont(QFont('bruh', 24))
+        self.err.setAlignment(Qt.AlignHCenter)
+
+        self.logregwidg.addTab(self.log, 'Sign in')
+        self.logregwidg.addTab(self.reg, 'Sign up')
+        self.logUI()
+        self.regUI()
+        self.logregwidg.setFixedSize(300, 260)
+
+        self.vertLayout.addStretch()
+        self.vertLayout.addWidget(self.welcomeLbl)
+        self.vertLayout.addWidget(self.logregwidg)
+        self.vertLayout.addWidget(self.err)
+        self.vertLayout.addStretch()
+        self.vertLayout.setAlignment(Qt.AlignHCenter)
+        self.setLayout(self.vertLayout)
+
+        self.setGeometry(300, 300, 680, 470)
+
+        qt_rectangle = self.frameGeometry()
+        center_Point = QDesktopWidget().availableGeometry().center()
+        qt_rectangle.moveCenter(center_Point)
+        self.move(qt_rectangle.topLeft())
+        self.setWindowTitle('test')
+        self.show()
+
+    def logUI(self):
+        self.logLayout = QVBoxLayout()
+
+        self.name = animatedLineEdit(self, dark=objTheme)
+        self.name.setPlaceholderText('Login')
+        self.name.setFocusPolicy(Qt.ClickFocus)
+        self.linedits['name'] = self.name
+        self.name.clicked.connect(self.on_clicked)
+
+        self.password = animatedLineEdit(self, dark=objTheme)
+        self.password.setPlaceholderText('Password')
+        self.password.setFocusPolicy(Qt.ClickFocus)
+        self.password.setEchoMode(animatedLineEdit.Password)
+        self.linedits['password'] = self.password
+        self.password.clicked.connect(self.on_clicked)
+
+        self.logBtn = animatedPushButton("Sign in", dark=objTheme)
+        self.log.setLayout(self.logLayout)
+        self.logBtn.setEnabled(False)
+        QApplication.processEvents()
+        self.logBtn.clicked.connect(lambda: self.auth(self.name.text(), self.password.text()))
+
+        QApplication.processEvents()
+        self.name.textChanged[str].connect(self.auth_btn_on)
+        self.password.textChanged[str].connect(self.auth_btn_on)
+
+        self.logLayout.addWidget(self.name)
+        self.logLayout.addWidget(self.password)
+        self.logLayout.addWidget(self.logBtn)
+
+    def auth(self, log, pas):
+        global settings
+        self.err.setText('Signing in...')
+        QApplication.processEvents()
+        status = requests.get(f'http://jointprojects.tk/auth.php?login={log}&password={pas}').text
+        QApplication.processEvents()
+        self.err.setText(status)
+        if status == 'Success':
+            if not path.exists('settings.ini'):
+                with open('settings.ini', 'w') as writeSettings:
+                    settings = {'login': log, 'password': pas, 'dark_theme': False}
+                    writeSettings.write(str(settings))
+            else:
+                with open('settings.ini', 'r') as readSettings:
+                    read = readSettings.read()
+                    if read:
+                        print(read)
+                        settings = literal_eval(read)
+                        settings['login'] = log
+                        settings['password'] = pas
+                        with open('settings.ini', 'w') as writeSettings:
+                            writeSettings.write(str(settings))
+            self.shop = mainStore()
+            self.shop.show()
+            self.hide()
+
+    def auth_btn_on(self):
+        if self.name.text() and self.password.text():
+            self.logBtn.setEnabled(True)
+        else:
+            self.logBtn.setEnabled(False)
+
+    def regUI(self):
+        self.regLayout = QVBoxLayout()
+        self.name1 = animatedLineEdit(self, dark=objTheme)
+        self.name1.setPlaceholderText('Login')
+        self.name1.setFocusPolicy(Qt.ClickFocus)
+        self.linedits['name1'] = self.name1
+        self.name1.clicked.connect(self.on_clicked)
+
+        self.password1 = animatedLineEdit(self, dark=objTheme)
+        self.password1.setPlaceholderText('Password')
+        self.password1.setEchoMode(animatedLineEdit.Password)
+        self.password1.setFocusPolicy(Qt.ClickFocus)
+        self.linedits['password1'] = self.password1
+        self.password1.clicked.connect(self.on_clicked)
+
+        self.password2 = animatedLineEdit(self, dark=objTheme)
+        self.password2.setPlaceholderText('Repeat your password')
+        self.password2.setEchoMode(animatedLineEdit.Password)
+        self.password2.setFocusPolicy(Qt.ClickFocus)
+        self.linedits['password2'] = self.password2
+        self.password2.clicked.connect(self.on_clicked)
+
+        self.regBtn = animatedPushButton("Sign up", dark=objTheme)
+        self.cond = QCheckBox()
+        self.cond.setMaximumWidth(20)
+        self.chkLayout = QHBoxLayout()
+        self.condtext = QLabel("I agree with <a href=\"http://jointprojects.tk/license.txt\">terms and conditions</a>")
+        self.condtext.setOpenExternalLinks(True)
+        self.chkLayout.addWidget(self.cond)
+        self.chkLayout.addWidget(self.condtext)
+
+        self.reg.setLayout(self.regLayout)
+        self.regBtn.setEnabled(False)
+        self.regBtn.clicked.connect(lambda: self.registration(self.name1.text(), self.password1.text()))
+        self.name1.textChanged[str].connect(self.registration_btn_on)
+        self.password1.textChanged[str].connect(self.registration_btn_on)
+        self.password2.textChanged[str].connect(self.registration_btn_on)
+        self.cond.stateChanged.connect(self.registration_btn_on)
+
+        self.regLayout.addWidget(self.name1)
+        self.regLayout.addWidget(self.password1)
+        self.regLayout.addWidget(self.password2)
+        self.regLayout.addLayout(self.chkLayout)
+        self.regLayout.addWidget(self.regBtn)
+
+    def registration(self, log, pas):
+        self.err.setText('Signing up...')
+        status = requests.get(f'http://jointprojects.tk/register.php?login={log}&password={pas}').text
+        self.err.setText(status)
+        if status == 'Success':
+            self.logregwidg.setCurrentIndex(0)
+            self.err.setText('Successful! Now try to login in your new account.')
+
+    def registration_btn_on(self):
+        if self.name1.text() and len(self.password1.text()) >= 6 and self.password2.text() and self.cond.isChecked() \
+                and (self.password1.text() == self.password2.text()):
+            self.regBtn.setEnabled(True)
+        else:
+            self.regBtn.setEnabled(False)
+
+    def on_clicked(self, lineEdit):
+        for le in self.linedits.values():
+            if le != lineEdit:
+                le.offClicked()
+            else:
+                lineEdit.setFocus()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    log = mainStore()
-    log.show()
+    if settings:
+        if 'login' in settings and 'password' in settings:
+            log, pas = settings['login'], settings['password']
+            status = requests.get(f'http://jointprojects.tk/auth.php?login={log}&password={pas}').text
+            if status == 'Success':
+                main = mainStore()
+                main.show()
+            else:
+                log = LoginWidg()
+                log.show()
+        else:
+            log = LoginWidg()
+            log.show()
+    else:
+        log = LoginWidg()
+        log.show()
     if settings['dark_theme']:
         apply_stylesheet(app, theme='dark_blue.xml')
     else:

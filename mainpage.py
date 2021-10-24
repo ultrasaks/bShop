@@ -633,7 +633,7 @@ class LoginWidg(QWidget):
         center_Point = QDesktopWidget().availableGeometry().center()
         qt_rectangle.moveCenter(center_Point)
         self.move(qt_rectangle.topLeft())
-        self.setWindowTitle('Log in -- bShop')
+        self.setWindowTitle('Log in — bShop')
         self.show()
 
     def logUI(self):

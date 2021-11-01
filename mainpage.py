@@ -11,11 +11,9 @@ DARK_THEME = ['#1E1D1B', '#232629', '#141414']
 settings = {}
 
 
-
 def empty_settings():
     settings["dark_theme"] = False
     print(settings)
-
 
 
 if not path.exists('settings.ini'):
@@ -78,7 +76,6 @@ class mainStore(QWidget):
         self.appicLayout = QHBoxLayout()
 
         name, descr, appid, author = 'test', 'lorem ipsum', '2', 'bruh'
-        # ToDo: приложение
         self.nameL = QLabel(name)
         self.nameL.setFont(QFont('Roboto', 18))
         self.descrScroll = QScrollArea()
@@ -95,7 +92,7 @@ class mainStore(QWidget):
         tagdef = QLabel('Tags:')
         tagdef.setFixedWidth(31)
         tags.addWidget(tagdef)
-        tegi = ['tag', 'tagg']  # tagi.split(';')
+        tegi = ['tag', 'tagg']
         for tag in tegi:
             temp_tag = QLabel(rf'<a href=\"\">{tag}</a>')
             temp_tag.setFixedWidth(len(tag) * 7)
@@ -113,22 +110,16 @@ class mainStore(QWidget):
         self.descrScroll.setStyleSheet(
             f'QWidget  {"{background-color:"} {THEME[1]}; border: 1px solid {THEME[1]}; border-radius: 3px;{"}"} ')
         self.description.setFixedWidth(5 * 120)
-        # self.description.setFixedHeight(100)
         self.description.setWordWrap(True)
 
         self.icon.setFixedSize(128, 128)
         self.icon.setStyleSheet(
             f'background-color: {THEME[1]}; border: 10px solid {THEME[1]}; border-radius: 8px;')
 
-        # self.self.downloadbtn.clicked.connect(lambda: self.download(self.downLink))
-
-        # self.MainLayout.addWidget(self.icon)
-        # self.MainLayout.addWidget(self.self.nameL)
         self.AppAboutLayout.addLayout(self.appicLayout)
         self.AppAboutLayout.addWidget(self.descrScroll)
-        ####
 
-        # ToDo: downloads
+
         self.DownloadsLayout = QVBoxLayout()
         self.DownloadsFrame = QFrame()
         self.DownloadsFrame.setStyleSheet('border: 0px;border-radius: 0px;')
@@ -171,9 +162,6 @@ class mainStore(QWidget):
         self.appScrollW = QWidget()
         self.appScrollW.setLayout(self.searchAppsLayout)
         self.appScroll.setWidget(self.appScrollW)
-        # self.appScrollW.setMinimumWidth(550)
-        # self.appScrollW.setMinimumHeight(550)
-        # for i in range(5):
         self.searchAppsLayout.addWidget(QLabel(' '))
 
         self.searchEdit = animatedLineEdit(dark=objTheme)
@@ -188,7 +176,6 @@ class mainStore(QWidget):
         self.SearchLayout.addWidget(self.searchGroup)
         self.SearchLayout.addSpacing(30)
         self.SearchLayout.addWidget(self.appScroll)
-        # ToDo: Поиск
 
         self.MainFrame.setLayout(self.AppsLayout)
 
@@ -253,7 +240,6 @@ class mainStore(QWidget):
         self.SettingsLayout.addWidget(pref)
         self.SettingsLayout.addWidget(QLabel(' '))
 
-        #ToDo: settings
 
         self.homeBtnLayout = QHBoxLayout()
         self.homeBtnLayout.setAlignment(Qt.AlignVCenter)
@@ -341,7 +327,6 @@ class mainStore(QWidget):
         self.TopG.setStyleSheet('padding:0px;padding-top: 0px;line-height: 1px;border-radius: 1px')
 
         for _ in range(5):
-            # app = _#int(app)
             appGL = QVBoxLayout()
             appGL.setContentsMargins(0, 10, 0, 10)
             appGL.setAlignment(Qt.AlignCenter)
@@ -349,13 +334,11 @@ class mainStore(QWidget):
             appG.setStyleSheet('border-radius: 10px')
             appG.setLayout(appGL)
             appG.setFixedSize(120, 110)
-            # application_info = cache().caching(app)
-            # appIcon = QSvgWidget() # f'cache/{str(app)}/icon.svg')
             appIcon = QLabel()
             appIcon.setStyleSheet(f'background-color: {THEME[0]}')
             appIcon.setFixedSize(72, 72)
             appPics['Top'].append(appIcon)
-            appName = QLabel('Application')  # application_info['name'])
+            appName = QLabel('Application')
             appName.setAlignment(Qt.AlignCenter)
             appNames['Top'].append(appName)
             appGL.addWidget(appIcon)
@@ -364,7 +347,6 @@ class mainStore(QWidget):
             self.Top.addStretch()
 
             appCards['Top'].append(appG)
-            # appG.clicked.connect(self.showApp)
             QApplication.processEvents()
         applist = requests.get('http://jointprojects.tk/apps/gettop.php').content.decode("utf-8")
         QApplication.processEvents()
@@ -424,28 +406,21 @@ class mainStore(QWidget):
         self.SettingsFrame.hide()
         cache().bigIcCache(id)
 
-
         self.icon.setStyleSheet(f'image: url(cache/{str(id)}/iconB.png);background-color: {THEME[1]};'
                                 f'border: 10px solid {THEME[1]}; border-radius: 8px;')
         self.nameL.setText(application_info['name'])
         self.fromL.setText(application_info['author'])
         self.description.setText(application_info['description'])
-
-
-
-        # self.description.setFixedHeight((len(application_info['description']) // 100) * 20)
-        self.description.setFixedHeight((application_info['description'].count('\n') * 20)+ 20)
+        self.description.setFixedHeight((application_info['description'].count('\n') * 20) + 20)
         if self.description.height() == 0:
             self.description.setFixedHeight(20)
 
     def showMain(self):
-        curSize = self.size()
         self.MainFrame.show()
         self.SearchFrame.hide()
         self.AppAboutFrame.hide()
         self.DownloadsFrame.hide()
         self.SettingsFrame.hide()
-        # self.resize(curSize)
 
     def showSearch(self):
         self.MainFrame.hide()
@@ -590,14 +565,11 @@ class mainStore(QWidget):
             settings_file.write(str(settings))
 
 
-
-
 class LoginWidg(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowIcon(QIcon('icons/icon.ico'))
         self.initUI()
-
 
     def initUI(self):
         self.linedits = {}

@@ -248,7 +248,7 @@ class mainStore(QWidget):
         self.homeBtn.setLayout(self.homeBtnLayout)
         self.homeBtnText.setFont(QFont('Roboto', 12))
         self.homeBtn.setFixedSize(200, 50)
-        self.homeBtn.setBruh()
+        self.homeBtn.setNewType()
         self.homeBtnIcon = QSvgWidget('icons/home.svg')
         self.homeBtnIcon.setFixedSize(25, 25)
         self.homeBtnLayout.addWidget(self.homeBtnIcon)
@@ -262,7 +262,7 @@ class mainStore(QWidget):
         self.settingsBtn.setLayout(self.settingsBtnLayout)
         self.settingsBtnText.setFont(QFont('Roboto', 12))
         self.settingsBtn.setFixedSize(200, 50)
-        self.settingsBtn.setBruh()
+        self.settingsBtn.setNewType()
         self.settingsBtnIcon = QSvgWidget('icons/settings.svg')
         self.settingsBtnIcon.setFixedSize(25, 25)
         self.settingsBtnLayout.addWidget(self.settingsBtnIcon)
@@ -276,7 +276,7 @@ class mainStore(QWidget):
         self.libraryBtn.setLayout(self.libraryBtnLayout)
         self.libraryBtnText.setFont(QFont('Roboto', 12))
         self.libraryBtn.setFixedSize(200, 50)
-        self.libraryBtn.setBruh()
+        self.libraryBtn.setNewType()
         self.libraryBtnIcon = QSvgWidget('icons/app.svg')
         self.libraryBtnIcon.setFixedSize(25, 25)
         self.libraryBtnLayout.addWidget(self.libraryBtnIcon)
@@ -290,7 +290,7 @@ class mainStore(QWidget):
         self.searchBtn.setLayout(self.searchBtnLayout)
         self.searchBtnText.setFont(QFont('Roboto', 12))
         self.searchBtn.setFixedSize(200, 50)
-        self.searchBtn.setBruh()
+        self.searchBtn.setNewType()
         self.searchBtnIcon = QSvgWidget('icons/search.svg')
         self.searchBtnIcon.setFixedSize(25, 25)
         self.searchBtnLayout.addWidget(self.searchBtnIcon)
@@ -414,6 +414,7 @@ class mainStore(QWidget):
         self.description.setFixedHeight((application_info['description'].count('\n') * 20) + 20)
         if self.description.height() == 0:
             self.description.setFixedHeight(20)
+        # self.test = QGroupBox()
 
     def showMain(self):
         self.MainFrame.show()

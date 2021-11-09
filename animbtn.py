@@ -95,7 +95,7 @@ class animatedPushButton(QPushButton):
                 # self.setStyleSheet('color: #2979ff;')
 
     def getBackColor(self):
-        return self.palette().color(self.pal_ele)
+        return self.palette().color(QPalette.Window)
 
     def setBackColor(self, color):
         self.co_set += 1
@@ -136,7 +136,6 @@ class animatedPushButton(QPushButton):
 
 
 class animatedCard(QGroupBox):
-    clicked = pyqtSignal()
 
     def __init__(self, *args, dark=False, basecolor=WHITE_THEME[1], clickcolor=WHITE_THEME[2], oncolor=WHITE_THEME[0],
                  shadowRadius=30, ontime=50, offtime=150):
@@ -148,11 +147,11 @@ class animatedCard(QGroupBox):
                 clickcolor = DARK_THEME[2]
             if oncolor == WHITE_THEME[0]:
                 oncolor = DARK_THEME[0]
-        QGroupBox.__init__(self, *args)
 
+        QGroupBox.__init__(self,  *args)
 
         self.installEventFilter(self)
-        self.bruh = False
+        self.new_type = False
 
         self.basecolor, self.clickcolor, self.oncolor, self.shadowRadius = basecolor, clickcolor, oncolor, shadowRadius
 
@@ -187,6 +186,7 @@ class animatedCard(QGroupBox):
         self.off_anim.setDuration(offtime)
         self.off_anim.setLoopCount(1)
         self.off_anim.start()
+        q = byar.data()
 
         self.on_anim = QPropertyAnimation(self, byar)
         self.on_anim.setEndValue(self.oncolor)
@@ -197,8 +197,8 @@ class animatedCard(QGroupBox):
         self.leaveEvent = self.offHovered
         self.mousePressEvent = self.onClicked
 
-    def setBruh(self):
-        self.bruh = True
+    def setNewType(self):
+        self.new_type = True
 
     def parseStyleSheet(self):
         ss = self.styleSheet()
@@ -231,12 +231,12 @@ class animatedCard(QGroupBox):
                 self.off_anim.start()
 
     def getBackColor(self):
-        return self.palette().color(self.pal_ele)
+        return self.palette().color(QPalette.Window)
 
     def setBackColor(self, color):
         self.co_set += 1
         sss = self.parseStyleSheet()
-        if self.bruh:
+        if self.new_type:
             bg_new = 'background-color: rgba(%d,%d,%d,%d);padding:0px;padding-top: 0px;line-height: 1px;' \
                      'padding-top: 0px' % (color.red(), color.green(), color.blue(), color.alpha())
 
@@ -271,7 +271,6 @@ class animatedCard(QGroupBox):
 
         self.setStyleSheet('; '.join(sss))
 
-    pal_ele = QPalette.Window
     zcolor = pyqtProperty(QColor, getBackColor, setBackColor)
     texcolor = pyqtProperty(QColor, getTextColor, setTextColor)
 

@@ -136,6 +136,7 @@ class animatedPushButton(QPushButton):
 
 
 class animatedCard(QGroupBox):
+    clicked = pyqtSignal()
 
     def __init__(self, *args, dark=False, basecolor=WHITE_THEME[1], clickcolor=WHITE_THEME[2], oncolor=WHITE_THEME[0],
                  shadowRadius=30, ontime=50, offtime=150):

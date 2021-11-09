@@ -489,7 +489,7 @@ class mainStore(QWidget):
             self.downloadAppsLayout.addWidget(QLabel(' '))
 
     def search(self):
-        searchRequest = self.searchEdit.text()
+        searchRequest = self.searchEdit.text().lower()
         if searchRequest:
             q = literal_eval(requests.get(
                 f'http://jointprojects.tk/apps/search.php?word={searchRequest}').content.decode(

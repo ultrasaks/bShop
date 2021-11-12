@@ -18,5 +18,5 @@ bShop — магазин приложений, написанный на pyQT с
 Сборка
  1. Установить Python версии 3.7 и выше
  2. Установить рip
- 3. Через pip установить библиотеки PyQT5, qt-material и pyinstaller
+ 3. Через pip установить библиотеки из requirements.txt
  4. Через командную строку скомпилировать проект командой «pyinstaller --windowed --onedir --add-data "[путь до папки]bShop/icons;icons/" "[путь до папки]bShop/mainpage.py"»
